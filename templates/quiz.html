@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonki Quizzer</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .header {
+            background-color: #f1f1f1;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .nav li {
+            float: left;
+        }
+
+        .nav li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        
+
+        .nav li a:hover {
+            background-color: #111;
+        }
+
+        .main {
+            -ms-flex: 70%;
+            flex: 70%;
+            background-color: #F0F0F0;
+            padding: 20px;
+        }
+
+        .footer {
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 700px) {
+            .row {
+                flex-direction: column;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            .nav li {
+                float: none;
+            }
+        }
+
+        /* Chatbox styles */
+        #chatBox {
+            width: 60%;
+            height: 400px;
+            border: 1px solid #ccc;
+            background-color: #f8f8f8;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #userInput {
+            width: 60%;
+            height: 60px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        #sendButton {
+            width: 18%;
+            padding: 5px;
+            margin-left: 2%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #sendButton:hover {
+            background-color: #45a049;
+        }
+
+        .Me, .Autonki {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            max-width: 75%;
+        }
+
+        .Me {
+            background-color: #e0e0e0;
+            color: #333;
+            align-self: flex-end;
+        }
+
+        .Autonki {
+            background-color: #447772;
+            color: white;
+        }
+
+        #chatBox {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Typing animation */
+        .typing-dots {
+            display: inline-block;
+            position: relative;
+            width: 10px;
+            height: 5px;
+        }
+
+        .typing-dots div {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: white;
+            animation: typing-dots 1.4s infinite;
+        }
+
+        .typing-dots div:nth-child(1) {
+            left: 0;
+            animation-delay: 0s;
+        }
+
+        .typing-dots div:nth-child(2) {
+            left: 4px;
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots div:nth-child(3) {
+            left: 8px;
+            animation-delay: 0.4s;
+        }
+
+        p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        color: #333;
+        font-family: Arial, sans-serif;
+        margin: 0 0 1em 0; /* Adds a margin at the bottom of each paragraph */
+        padding: 0 10px; /* Adds a horizontal padding to the left and right of each paragraph */
+        text-align: justify; /* Justifies the text so it fills the width of the container */
+        max-width: 800px; /* Limits the width of the text to 800px */
+        }
+
+        p a {
+            color: #0076FF;
+            text-decoration: none;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+
+        p strong {
+            font-weight: bold;
+        }
+
+        p u {
+            text-decoration: underline;
+        }
+
+        p em {
+            font-style: italic;
+        }
+
+        @keyframes typing-dots {
+            0%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-2px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <ul class="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/quiz.html">AutoQuiz</a></li>
+    </ul>
+
+    <h1>AutoQuiz</h1>
+        <p>
+        AutoQuiz is a chat-based tool that allows you to copy-paste your custom notes and then quiz yourself on them.<br>
+        The chat bot is very interactive and capable, so feel free to ask it to do things specific to your study habits, e.g.:<br>
+        "Give me hints with each question", "Only give me multiple choice questions with 4 options", "Make the questions really tough", etc.
+        </p>
+
+    <div class="main">
+        <p>Input your notes here:</p>
+        <textarea id="notes" rows="10" cols="100"></textarea>
+
+        <div id="chat">
+            <!-- Chat interface will be rendered here -->
+        </div>
+        <script>
+            // Chat interface
+            class Chat {
+                constructor() {
+                    this.chatBox = document.createElement('div');
+                    this.input = document.createElement('textarea');
+                    this.button = document.createElement('button');
+    
+                    this.chatBox.id = 'chatBox';
+                    this.input.id = 'userInput';
+                    this.button.id = 'sendButton';
+                    this.button.innerHTML = 'Send';
+                    this.input.innerHTML = 'Quiz me!';
+    
+                    this.button.addEventListener('click', this.sendMessage.bind(this));
+                    this.input.addEventListener('keydown', (event) => {
+                        if (event.key === 'Enter' && !event.shiftKey) {
+                            event.preventDefault();
+                            this.sendMessage();
+                        }
+                    });
+    
+                    document.getElementById('chat').appendChild(this.chatBox);
+                    document.getElementById('chat').appendChild(this.input);
+                    document.getElementById('chat').appendChild(this.button);
+
+                    // Add test messages
+                    //this.displayMessage({ user: 'Ardemis', text: 'You were given the above patient presentation. Do you have any questions about the patient? If not, what do you do next?' });
+                }
+    
+                async sendMessage() {
+                    this.button.disabled = true; // Disable the button
+    
+                    const userInput = document.getElementById('userInput').value;
+                    if (userInput.trim() === '') {
+                        this.button.disabled = false;
+                        return;
+                    }
+    
+                    const message = { user: 'Me', text: userInput };
+                    this.displayMessage(message);
+                    this.input.value = ''; // Clear the input box
+    
+                    const typingMessage = this.displayMessage({ user: 'Autonki', text: 'Typing<span class="typing-dots"><div></div><div></div><div></div></span>' });
+    
+                    const response = await this.getProfessorResponse();
+                    this.chatBox.removeChild(typingMessage);
+                    this.displayMessage({ user: 'Autonki', text: response });
+    
+                    this.button.disabled = false; // Re-enable the button
+                }
+    
+                async getProfessorResponse() {
+                    const chatHistory = Array.from(this.chatBox.children).map(el => el.textContent);
+                    const response = await fetch('/api/professor-response', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ chat_history: chatHistory, notes: document.getElementById('notes').value})
+                    });
+    
+                    const data = await response.json();
+                    return data.professor_response;
+                }
+    
+                displayMessage(message) {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add(message.user);
+                    messageElement.innerHTML = `<strong>${message.user}:</strong> ${message.text}`;
+                    this.chatBox.appendChild(messageElement);
+                    this.chatBox.scrollTop = this.chatBox.scrollHeight;
+                    return messageElement;
+                }
+            }
+    
+            const chat = new Chat();
+        </script>
+    </div>
+</body>
+</html>

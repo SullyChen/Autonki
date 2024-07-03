@@ -1,0 +1,136 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F0F0F0;
+    width: 800px;
+    height: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 50px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  color: #333;
+  font-family: Arial, sans-serif;
+  margin: 0 0 1em 0; /* Adds a margin at the bottom of each paragraph */
+  padding: 0 10px; /* Adds a horizontal padding to the left and right of each paragraph */
+  text-align: justify; /* Justifies the text so it fills the width of the container */
+  max-width: 800px; /* Limits the width of the text to 800px */
+}
+
+p a {
+    color: #0076FF;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+p strong {
+    font-weight: bold;
+}
+
+p u {
+    text-decoration: underline;
+}
+
+p em {
+    font-style: italic;
+}
+
+form {
+    margin: 30px auto;
+    max-width: 600px;
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+textarea {
+    border: none;
+    border-radius: 5px;
+    box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+input[type=range] {
+    width: 80%;
+    margin: 10px 0px;
+    -webkit-appearance: none;
+    background-color: #F0F0F0;
+    height: 5px;
+    border-radius: 5px;
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background-color: #0076FF;
+    cursor: pointer;
+}
+
+input[type=submit] {
+    display: block;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #0076FF;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.container {
+    position: relative;
+}
+
+.loading {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(0%, 0%);
+}
+
+.loading img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 2s linear infinite;
+    width: 50px;
+    height: 50px;
+}
+
+#timeElapsed {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+}
+
+@media (max-width: 768px) {
+    form {
+        padding: 10px;
+    }
+    textarea {
+        height: 100px;
+    }
+}

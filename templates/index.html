@@ -1,0 +1,138 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+        <style>
+            /* Add styles for the loading div */
+            .loading {
+                display: none; /* initially hide the loading div */
+                position: absolute;
+                top: 95%;
+                left: 50%;
+                transform: translate(-50%, -95%);
+            }
+            /* Add styles for the spinning wheel */
+            .loading img {
+                animation: spin 2s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            .nav {
+            display: flex;
+            justify-content: center;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+            }
+
+            .nav li {
+                float: left;
+            }
+
+            .nav li a {
+                display: block;
+                color: white;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+            
+
+            .nav li a:hover {
+                background-color: #111;
+            }
+        </style>
+    </head>
+    <body>
+        <ul class="nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/quiz.html">AutoQuiz</a></li>
+        </ul>
+        <h1>Autonki</h1>
+        <p>
+        Hi there, Autonki (Auto Anki) is a tool that allows you to copy paste a bunch of messy notes and make
+        a nice little custom Anki deck from it. Basically, copy paste your notes into this box below, indicate the
+        number of flash cards you want to generate, and hit submit. It'll take probably around a minute or so to generate
+        the deck.
+        </p>
+
+        <p>
+        When the deck is done generating, it will automatically start a download for you. If a download doesn't
+        automatically start after more than like ~90 seconds, something is wrong with security settings probably. I have
+        basically no idea how to make a link to the download. I'm an AI scientist, not a front-end engineer. Speaking of
+        horrendous front-end, the loading symbol will not stop spinning even when the generation is done. I don't know how
+        to fix this. ChatGPT wrote most of the front-end for this.
+        </p>
+
+        <p>
+        There's also a word-limit to this application, I'm not sure exactly how much it can handle but I wouldn't submit
+        over ~1500 words to summarize. If you really need to make a big deck, just generate it in ~1500 word chunks.
+        </p>
+
+        <p>
+        If the deck you get as an output sucks, just regenerate the deck with the same notes you used before. It's kinda random
+        so you'll get different outputs each time you run it. Lastly, <i>please</i> check over the cards to ensure they're
+        accurate; large language models sometimes do funky things and can occasionally generate a completely inaccurate card.
+        </p>
+        <form method="POST" onsubmit="showLoading(event)">
+            <div class="form-group">
+                <b><u>Copy/paste your notes here:</u></b><br />
+                <textarea style="height: 200px; width: 100%; font-size: 14pt; font-family: Arial; padding: 10px;" name="notes"></textarea>
+                <div>
+                    <label for="num-cards">Number of cards:</label>
+                    <input type="range" id="num-cards" name="num-cards" min="5" max="50" step="1" value="20">
+                    <span id="num-cards-value">20</span>
+                    <div class="container">
+                        <div class="loading">
+                            <img src="/static/img/loading.png" alt="Processing...">
+                        </div>
+                        <input type="submit", id="submit-btn"> <div id="result"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <script>
+            // Update the display of the slider value as the user moves the slider
+            const numCardsSlider = document.getElementById('num-cards');
+            const numCardsValue = document.getElementById('num-cards-value');
+            numCardsValue.innerHTML = numCardsSlider.value;
+            numCardsSlider.oninput = function() {
+                numCardsValue.innerHTML = this.value;
+            };
+
+            function showLoading(event) {
+                event.preventDefault();
+                document.querySelector('.loading').style.display = 'block';
+                document.querySelector('#submit-btn').disabled = true;
+                document.querySelector('#result').innerHTML = ``;
+                document.querySelector('#submit-btn').value = 'Generating...';
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        document.querySelector('#result').innerHTML = `<a href="${response.link}">Download Anki Deck</a>`;
+                    } else {
+                        alert('Request failed.  Returned status of ' + xhr.status);
+                    }
+                    hideLoading();
+                };
+                xhr.send(JSON.stringify({
+                    notes: document.querySelector('textarea[name="notes"]').value,
+                    num_cards: numCardsSlider.value
+                }));
+            }
+            function hideLoading() {
+                document.querySelector('.loading').style.display = 'none';
+                document.querySelector('#submit-btn').disabled = false;
+                document.querySelector('#submit-btn').value = 'Submit';
+            }
+        </script>
+    </body>
+</html>
